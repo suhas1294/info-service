@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info</title>
+</head>
+
+<body>
+    <main>
+        <button id="table-toggle">Toggle table</button>
+        <div id="text">
+            <input type="text" id="searchInput" onkeyup="searchData()" placeholder="Search for fields.."
+                title="Type in a field name">
+            <table style="width:50%" id="data-table">
+                <colgroup>
+                    <col span="1" style="width: 60%;">
+                    <col span="1" style="width: 35%;">
+                    <col span="1" style="width: 5%;">
+                </colgroup>
+                <tr>
+                    <th>what you want?</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                </tr>
+            </table>
+        </div>
+        <div id="ext-links">
+            <h1>Important links</h1>
+            <ul id="link-list"></ul>
+        </div>
+        <div id="screenshots"></div>
+    </main>
+
+</body>
+
+</html>
+
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-size: 20px;
+    }
+
+    main{
+        padding: 1rem;
+    }
+
+    #table-toggle{
+        float: right;
+        margin-bottom: 1rem;
+        padding: 5px;
+        color: red;
+        background-color: aquamarine;
+    }
+
+    #searchInput {
+        width: 100%;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #000;
+        margin-bottom: 12px;
+    }
+
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    .fa-clone {
+        cursor: pointer;
+    }
+    .fa-clone:active {
+        color: red;
+    }
+
+    #ext-links > h1{
+        border-top: 1px solid black;
+        margin: 1rem 0;
+    }
+    #link-list {
+        list-style: none;
+    }
+    #link-list > li {
+        line-height: 2;
+    }
+    #link-list > a {
+        text-decoration: none;
+    }
+</style>
+
+<script>
+
+    window.addEventListener('load', () => {
+
+        function copyValue(event) {
+            const tdNode = event.target.parentElement.parentElement.children[1];
+            let value = null;
+            // if its input field
+            if (tdNode.childNodes[0].nodeType === 1) {
+                // its input field
+                value = tdNode.children[0].value;
+            } else {
+                // its plain text
+                value = tdNode.textContent;
+            }
+            navigator.clipboard.writeText(value);
+        }
+
+        function searchData() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("data-table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function toggleTable(){
+            let infoDiv = document.querySelector('#text')
+            if(infoDiv.style.display === "none"){
+                infoDiv.style.display = "block";
+            }else{
+                infoDiv.style.display = "none";
+            }
+        }
+
+
+        fetch('./data.json')
+            .then(data => data.json())
+            .then(jsonData => {
+                let tableData = "";
+                let linkData = "";
+                jsonData.essentials.forEach(item => {
+                    let valueField = item.field_type === 'input' ? `<td><input type="password" disabled value="${item.field_value}"></td>` : `<td>${item.field_value}</td>`;
+                    let template = `
+                            <tr>
+                                <td>${item.field_name}</td>
+                                ${valueField}
+                                <td><i class="fa fa-clone" aria-hidden="true"></i></td>
+                            </tr>
+                        `;
+                    tableData += template;
+                })
+                jsonData.links.forEach(linkObj => {
+                    linkData += `<li><a href="${linkObj.link}" target="_blank">${linkObj.link_title}</a></li>`
+                })
+
+                // adding all event listeners
+                document.getElementById('table-toggle').addEventListener('click', toggleTable )
+                document.getElementById('link-list').insertAdjacentHTML('afterbegin', linkData);
+                document.querySelector('table').insertAdjacentHTML('beforeend', tableData);
+                document.getElementById('searchInput').addEventListener('keyup', searchData);
+                document.querySelectorAll('.fa-clone').forEach(element => element.addEventListener('click', e => copyValue(e)));
+            })
+            .catch(err => console.error(err.message));
+    });
+</script>
+
+<!--
+    for windows, when u dont have permission to install python
+    Installing python without permissions: https://stackoverflow.com/questions/33876657/how-to-install-python-any-version-in-windows-when-youve-no-admin-privileges
+    Running python server:
+    cd C:\Users\<user_id>\Documents\workspace\python"
+    python -m http.server --directory "C:\Users\<user_id>\Documents\workspace\info"
+    https://localhost:8000
+ -->

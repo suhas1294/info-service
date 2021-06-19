@@ -1,0 +1,40 @@
+{
+    "essentials": [
+        {
+            "field_name": "Offer letter ref no",
+            "field_value": "your value here",
+            "field_type": "text"
+        },
+        {
+            "field_name": "employee id",
+            "field_value": "your value here",
+            "field_type": "text"
+        },
+        {
+            "field_name": "email id",
+            "field_value": "your value here",
+            "field_type": "text"
+        },
+        {
+            "field_name": "System password",
+            "field_value": "your value here",
+            "field_type": "input"
+        },
+        {
+            "field_name": "Laptop asset number",
+            "field_value": "your value here",
+            "field_type": "text"
+        },
+        {
+            "field_name": "Laptop serial number",
+            "field_value": "your value here",
+            "field_type": "text"
+        }
+    ],
+    "links": [
+        {
+            "link_title": "login url",
+            "link": "https://example.com"
+        }
+    ]
+}
