@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENV</title>
+</head>
+<style>
+    span{
+        color: red;
+        font-weight: 900;
+        font-size: 1.5rem;
+    }
+    input{
+        font-size: 1.5rem;
+    }
+    a:visited {
+        color: blue;
+    }
+    #wrapper{
+        display: flex;
+        width: 98vw;
+        justify-content: center;
+    }
+    #wrapper > div{
+        width: 45vw;
+        display: flex;
+        flex-flow: column nowrap;
+    }
+    h2{
+        display: inline-block;
+        padding-right: 5px;
+    }
+    #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        top: 30px;
+    }
+
+    /* Show the snackbar when clicking on a button (class added with JavaScript) */
+    #snackbar.show {
+        visibility: visible; 
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    /* Animations to fade the snackbar in and out */
+    @-webkit-keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+    }
+
+    @keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+    }
+
+    @-webkit-keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+    }
+
+    @keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+    }
+</style>
+<body>
+    <div id="snackbar">Copied the URL</div>
+    <div id="wrapper">
+        <div>
+            <div>
+                <label for="it_env"><span>IT-</span></label>
+                <input type="number" id="it_env" onchange="generateURL(event)" min="1" max="5">
+            </div>
+            <h2><a target="_blank" href="#" id="it_login">Login Link</a></h2>
+            <div><h2><a target="_blank" href="#" id="it_bau">Dashboard 1 Link</a></h2></h2><button onclick="copyUrl(event)">Copy</button></div>
+            <div><h2><a target="_blank" href="#" id="it_OBP">Dashboard 2 link</a></h2></h2><button onclick="copyUrl(event)">Copy</button></div>
+            <div><h2><a target="_blank" href="#" id="it_zelle">Dashboard 3 link</a></h2></h2><button onclick="copyUrl(event)">Copy</button></div>
+        </div>
+        <div>
+            <div>
+                <label for="uat_env"><span>UAT-</span></label>
+                <input type="number" id="uat_env" onchange="generateURL(event)" min="1" max="5">
+            </div>
+            <h2><a target="_blank" href="#" id="uat_login">Login Link</a></h2>
+            <div><h2><a target="_blank" href="#" id="uat_bau">Dashboard 1 Link</a></h2></h2><button onclick="copyUrl(event)">Copy</button></div>
+            <div><h2><a target="_blank" href="#" id="uat_OBP">Dashboard 2 link</a></h2></h2><button onclick="copyUrl(event)">Copy</button></div>
+            <div><h2><a target="_blank" href="#" id="uat_zelle">Dashboard 3 link</a></h2></h2><button onclick="copyUrl(event)">Copy</button></div>
+        </div>
+    </div>
+</body>
+<script>
+    const host = 'ebanking.abc.com'
+    const mm_path = '/paybill/external'
+    const copyUrl = event => {
+        const url_to_be_copied = event.target.previousSibling.lastChild.getAttribute('href')
+        navigator.clipboard.writeText(url_to_be_copied);
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 1500);
+    }
+    function generateURL(event){
+        const iden = event.target.id.split('_')[0];
+        const env_no = Number(event.target.value);
+        if(env_no < 1 || env_no > 5){
+            document.querySelectorAll('a').forEach(ele => ele.setAttribute('href', '#'))
+            return;
+        }
+        const login_url = `https://${iden}${env_no}-${host}/Auth/Login/RedirectToLogin`
+        const db_1_url = `https://${iden}${env_no}-${host}${mm_path}/path1/`
+        const db_2_url = `https://${iden}${env_no}-${host}${mm_path}/path2/`
+        const db_3_url = `https://${iden}${env_no}-${host}${mm_path}/new-user/path3`
+        document.getElementById(`${iden}_login`).setAttribute('href', login_url)
+        document.getElementById(`${iden}_bau`).setAttribute('href', db_1_url)
+        document.getElementById(`${iden}_OBP`).setAttribute('href', db_2_url)
+        document.getElementById(`${iden}_zelle`).setAttribute('href', db_3_url)
+    }
+    const validateLink = (event) => {
+        // const iden = event.target.id.split('_')[0];
+        const env_no = event.target.getAttribute('href');
+        if(env_no === '#' || env_no > 5 || env_no < 1){
+            alert('Please input valid number in text box between 1 to 5')
+            document.querySelectorAll('a').forEach(ele => ele.setAttribute('target', '_self'))
+        }else{
+            document.querySelectorAll('a').forEach(ele => ele.setAttribute('target', '_blank'))
+        }
+    }
+    window.addEventListener('load', () => {
+        document.querySelectorAll('a').forEach(ele => ele.addEventListener('click', validateLink))
+    })
+</script>
+</html>
